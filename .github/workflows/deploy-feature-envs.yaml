@@ -1,8 +1,11 @@
 name: Deploy Feature Environment
 
 on:
-  pull_request:
-    types: [labeled, closed]
+  # pull_request:
+  #   types: [labeled, closed]
+  push:
+    branches:
+      - "test"
 
 env:
   LABEL_DEPLOY: '[AZERO] DEPLOY-FEATURE-ENV'
