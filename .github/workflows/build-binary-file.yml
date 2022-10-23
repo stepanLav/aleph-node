@@ -1,0 +1,64 @@
+name: Publish GitHub release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name'
+        required: true
+        default: v*.*.*
+      release_name:
+        description: 'Special name changes'
+        required: true
+        default: Describe here what was changed
+  pull_request:
+
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+
+      - name: Install WASM target
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Build binary and runtime
+        run: cargo build --release -p aleph-node
+
+      - name: Upload release binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: v1.1.1-aleph-release-node
+          path: target/release/aleph-node
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload release runtime
+        uses: actions/upload-artifact@v2
+        with:
+          name: v1.1.1-aleph-release-runtime
+          path: target/release/wbuild/aleph-runtime/aleph_runtime.compact.wasm
+          if-no-files-found: error
+          retention-days: 7
+
+      - uses: rickstaa/action-create-tag@v1
+        with:
+          tag: v1.1.1
+          message: Decrease governance periods
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.1.1
+          name: Decrease governance periods
+          draft: false
+          files: |
+            ./target/release/aleph-node
+            ./target/release/wbuild/aleph-runtime/aleph_runtime.compact.wasm
+

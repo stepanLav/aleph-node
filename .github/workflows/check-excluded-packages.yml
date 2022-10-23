@@ -1,9 +1,9 @@
 name: Check excluded packages
 
 on:
-  pull_request:
-    branches:
-      - '**'
+  # pull_request:
+  #   branches:
+  #     - '**'
   push:
     paths-ignore:
       - '*.md'
